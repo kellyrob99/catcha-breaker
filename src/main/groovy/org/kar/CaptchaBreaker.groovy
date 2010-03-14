@@ -20,42 +20,44 @@ import com.sun.media.jai.codec.TIFFEncodeParam
  */
 class CaptchaBreaker
 {
-//    from PIL import Image
-//
-//img = Image.open('input.gif')
-//img = img.convert("RGBA")
-//
-//pixdata = img.load()
-//
-//# Clean the background noise, if color != black, then set to white.
-//for y in xrange(img.size[1]):
-//    for x in xrange(img.size[0]):
-//        if pixdata[x, y] != (0, 0, 0, 255):
-//            pixdata[x, y] = (255, 255, 255, 255)
-//
-//img.save("input-black.gif", "GIF")
-//
-//#   Make the image bigger (needed for OCR)
-//im_orig = Image.open('input-black.gif')
-//big = im_orig.resize((116, 56), Image.NEAREST)
-//
-//ext = ".tif"
-//big.save("input-NEAREST" + ext)
-//
-//#   Perform OCR using pytesser library
-//from pytesser import *
-//image = Image.open('input-NEAREST.tif')
-//print image_to_string(image)
+/* Code copied from http://www.bonsai-sec.com/blog/index.php/breaking-weak-captcha-in-26-lines-of-code/
+from PIL import Image
+
+img = Image.open('input.gif')
+img = img.convert("RGBA")
+
+pixdata = img.load()
+
+# Clean the background noise, if color != black, then set to white.
+for y in xrange(img.size[1]):
+    for x in xrange(img.size[0]):
+        if pixdata[x, y] != (0, 0, 0, 255):
+            pixdata[x, y] = (255, 255, 255, 255)
+
+img.save("input-black.gif", "GIF")
+
+#   Make the image bigger (needed for OCR)
+im_orig = Image.open('input-black.gif')
+big = im_orig.resize((116, 56), Image.NEAREST)
+
+ext = ".tif"
+big.save("input-NEAREST" + ext)
+
+#   Perform OCR using pytesser library
+from pytesser import *
+image = Image.open('input-NEAREST.tif')
+print image_to_string(image)
+*/
 
     def imageToString = {String fileName ->
         BufferedImage image = ImageIO.read(new File(fileName))
         BufferedImage dimg = new BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB)
-
         dimg.createGraphics().with {
             setComposite(AlphaComposite.Src)
             drawImage(image, null, 0, 0)
             dispose()
         }
+        
         (0..<dimg.height).each {i ->
             (0..<dimg.width).each {j ->
                 if (dimg.getRGB(j, i) != Color.BLACK.RGB)
@@ -90,7 +92,7 @@ class CaptchaBreaker
         return dimg
     }
 
-     void convertToTiff(String inputFile, String outputFile)
+    void convertToTiff(String inputFile, String outputFile)
     {
         OutputStream ios
         try
